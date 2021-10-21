@@ -1,28 +1,13 @@
-# Windows games on Linux! Steam games!
+# Windows/Steam games on Linux!
 
-Play Steam and Windows games on Linux using Wine to do so and confining the mess inside a Docker container.
-Bind X11's socket for the windows to appear and use ear the sound from PulseAudio.
+Play Windows/Steam games on Linux using Steam Proton to do so, and confined inside a Docker container.
+Bind X11's socket for the windows to appear and ear the sound from PulseAudio.
 
 ## Prerequisites
 
 ### Docker
 
-Be sure to have Docker installed. Detailed explanations are given on the [Docker official site](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/).
-For Ubuntu 16.04 (amd64) you can install the latest version of Docker Community Edition with the following command.
-```
-sudo apt-get install \
-  apt-transport-https \
-  ca-certificates \
-  curl \
-  software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository \
-  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) \
-  stable"
-sudo apt-get update
-sudo apt-get install docker-ce
-```
+Be sure to have Docker installed thanks to the detailed explanations given on the [Docker official site](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/).
 
 ### PulseAudio
 
@@ -33,43 +18,25 @@ aplay /usr/share/sounds/alsa/Front_Center.wav && ps -A | grep pulseaudio
 ```
 
 ### A supported GPU
-Currently, Nvidia cards should work out of the box whereas AMD and Intel Integrated chipsets may require some additional work (tweaking in [builder.sh](./builder.sh)). Let me know about your experimentations!
+Currently, Nvidia cards and Intel Integrated chipsets have been tested and should work out of the box whereas AMD may require some additional work (tweaking in [builder.sh](./builder.sh)). Let me know about your experimentations!
 
-## Installation
+## Installation and first launch
 Clone this repository to get the [Dockerfile](./Dockerfile) and the helper scripts to build and launch a corresponding container.
 ```
-git clone https://github.com/webanck/docker-wine-steam.git
-cd docker-wine-steam
+git clone https://github.com/webanck/docker-steam-proton.git
+cd docker-steam-proton
 ./builder.sh
 ./launcher.sh
 ```
-Then you should be inside the container as the wine user. The last steps are an ultimate Wine configuration and the installation of Steam (which you can skip if you just want to use Wine for Windows games/applications).
-
-```
-finalize_installation
-```
-It will open the Wine configuration tool `winecfg`.
-My advice: let Windows XP as default.
-In the Audio tab, choose pulseaudio for each device.
-
-![audio tab configuration](./winecfg-audio.png)
-
-In the Graphics tab, I recommend to disable windows decorations and to emulate a virtual desktop of your screen's resolution.
-
-![graphics tab configuration](./winecfg-graphics.png)
-
-After the installation of Steam, you can simply use the provided alias `steam` to launch it.
-Before playing any game, be sure to turn the Steam overlay off (uncheck Steam->Settings->In-Game->Enable the Steam Overlay) because it's not supported by Wine.
+Then you should be inside the container as the `proton` user. The last step is to launch Steam for the first time to let it update itself. With the provided alias, launching steam reduces to `steam`.
+Now, be warned that it's easier to close Steam from its contextual menu rather than closing its window: if you close its window, you need to kill it manually with `pkill -9 steam`.
 
 ## Subsequent uses and data flow
-After the installation is finished, you can leave the container typing `exit` or using the keys `Ctrl+D`.
-Your data will remain in the container while you don't delete it, and you can restart it easily with the former launcher script.
-```
-./launcher.sh
-```
-You might want to copy some files into the [shared_directory](shared_directory) which is mounted in the home of the wine user. Some scripts are provided to help you [import](shared_directory/importSteam.sh) or [export](shared_directory/exportSteam.sh) quickly your steam installation.
+You can leave the container typing `exit` or using the keys `Ctrl+D`.
+Your data will remain in the container while you don't delete it, and you can restart it easily with the former launcher script: [`./launcher.sh`](launcher.sh).
+You might want to copy some files into the `shared_directory` to transfer files between host and container filesystems which is created by the launcher script and mounted in the home of the proton user.
 
 ## Motivation
-Have you ever tried to install Wine?
-And have you ever tried to install Wine while using CUDA on your system?
-Well, if you have not, do not try, it's messy.
+Have you tried to install Steam on Ubuntu recently?
+For me, it has become cumbersome (it doesn't work out of the box anymore) and it messes with other packages such as GPU drivers.
+This Docker container is a proposition to simplify this process.
