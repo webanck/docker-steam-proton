@@ -11,7 +11,7 @@ ENV HOME=/home/proton
 WORKDIR /home/proton
 
 # Setting up an alias to launch Steam easily.
-RUN su proton -c "echo 'alias steam=\"proton /usr/games/steam\"' >> /home/proton/.bashrc"
+RUN su proton -c "echo 'alias steam=\"/usr/games/steam\"' >> /home/proton/.bashrc"
 
 # Adding the link to the pulseaudio server for the client to find it.
 ENV PULSE_SERVER=unix:/run/user/"$PROTON_USER_UID"/pulse/native
